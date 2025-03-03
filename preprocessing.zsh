@@ -40,7 +40,7 @@ mkdir trimmed_reads
 paste -d ' ' 1_end.txt 2_end.txt | xargs -n 2 trim_galore --paired --fastqc -o trimmed_reads
 
 ######## --------------> Delete raw reads for space (if-fi safeguard in case trimming fails)
-if [-f trimmed/*gastq.gz]
+if [-n "$(ls trimmed_reads 2>/dev/null)"]
 	rm -rf *fastq.gz
 fi
 
@@ -71,8 +71,8 @@ bowtie2 -x hg38_index/hg38 \
     --threads 8 | samtools view -@8 -bS | samtools sort -@8 -o aligned_reads/aligned.sorted.bam
 
 
-######## --------------> Delete trimmed reads & other files for space (if-fi safegaurd if alignment fails)
-if [-f aligned_reads/*]
+######## --------------> Delete trimmed reads & other files for space (if-fi safeguard if alignment fails)
+if [-n "$(ls aligned_reads 2>/dev/null)"]
 	rm -rf trimmed_reads 1_end.txt 2_end.txt
 fi
 
