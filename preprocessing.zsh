@@ -26,7 +26,7 @@ cd ..
 
 ##########################  FastQC (input: fastq; output: fastq) ##################################  
 mkdir fastqc
-find /raw_reads -name "*.fastq.gz" | xargs fastqc -t 8 -o fastqc
+find . -name "*.fastq.gz" | xargs fastqc -t 8 -o fastqc
 
 ################################## TrimGalore #####################################################
 ######## --------------> prep fastq files to iterate through IN ORDER
@@ -67,11 +67,11 @@ sort 2_end.txt -o 2_end.txt
 bowtie2 -x hg38_index/hg38 \
     -1 $(tr '\n' ',' < 1_end.txt | sed 's/,$//') \
     -2 $(tr '\n' ',' < 2_end.txt | sed 's/,$//') \
-    -S aligned.sam --threads 8 | samtools view -@8 -bS | samtools sort -@8 -o aligned_reads/aligned.sorted.bam
+    --threads 8 | samtools view -@8 -bS | samtools sort -@8 -o aligned_reads/aligned.sorted.bam
 
 
-######## --------------> Delete trimmed reads & SAM files for space
-rm -rf aligned_reads/*.sam trimmed_reads 1_end.txt 2_end.txt
+######## --------------> Delete trimmed reads & other files for space
+rm -rf trimmed_reads 1_end.txt 2_end.txt
 
 ######## --------------> Get GTF/GFF
 if [ ! -f "hg38.refGene.gtf" ]; then
