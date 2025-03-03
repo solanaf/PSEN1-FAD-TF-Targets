@@ -3,13 +3,13 @@
 ## Build Conda Environment:
 After creating and activating your environment, add to your environment:
 
-conda config --add channels defaults
-conda config --add channels bioconda
-conda config --add channels conda-forge
-conda update -n base -c defaults conda
-conda install -c conda-forge xopen
-conda install -c bioconda fastqc samtools bowtie2 cutadapt trim-galore subread
-pip install cufflinks
+conda config --add channels defaults \n
+conda config --add channels bioconda \n
+conda config --add channels conda-forge \n
+conda update -n base -c defaults conda \n
+conda install -c conda-forge xopen \n
+conda install -c bioconda fastqc samtools bowtie2 cutadapt trim-galore subread \n
+pip install cufflinks \n
 
 ## preprocessing.zsh:
 1. Check my test.1sh script to see how you should set up all your runs with wget
