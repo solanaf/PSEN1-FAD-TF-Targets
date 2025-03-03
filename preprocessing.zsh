@@ -10,19 +10,16 @@
 ################  EXAMPLE USAGE (FEEL FREE TO UNCOMMENT AND RUN with):    ########################
 ################       (no spaces between '=' when defining)    	  ########################
 # export DIRECTORY="/Users/solanafernandez/Desktop/UCSD_local/BENG204/project" # desired location of file dump
-# export GET_DATA="test1.sh" # 	location of wget bash script
+# export GET_DATA="zsh/test1.sh" # 	location of wget bash script
 
 ##################################################################################################
 ######## --------------> $DIRECTORY should be the path that contains zsh data retrieval folder
 cd $DIRECTORY
 
-mkdir raw_reads
-
 ##########################  Retrieve Data: Test (make sure executable) ############################
-chmod +x zsh/$GET_DATA
-cd raw_reads
-zsh zsh/$GET_DATA
-cd ..
+chmod +x $GET_DATA
+
+zsh $GET_DATA # throws fastq's in current directory (deleted later)
 
 ##########################  FastQC (input: fastq; output: fastq) ##################################  
 mkdir fastqc
@@ -42,7 +39,7 @@ mkdir trimmed_reads
 paste -d ' ' 1_end.txt 2_end.txt | xargs -n 2 trim_galore --paired --fastqc -o trimmed_reads
 
 ######## --------------> Delete raw reads for space
-rm -rf raw_reads
+rm -rf *fastq.gz
 ###################################  ALIGNMENT #####################################################
 ######## --------------> Retrieve hg38
 if [ ! -f "hg38.fa" ]; then
