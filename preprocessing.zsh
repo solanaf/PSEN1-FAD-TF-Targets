@@ -1,4 +1,3 @@
-
 ################################# PREPROCESSING PIPELINE! #######################################
 # Project: PSEN1 FAD TFs
 # Creator: Solana Fernandez
@@ -42,6 +41,9 @@ paste -d ' ' 1_end.txt 2_end.txt | xargs -n 2 trim_galore --paired --fastqc -o t
 ######## --------------> Delete raw reads for space (if-fi safeguard in case trimming fails)
 if [ -n "$(ls trimmed_reads 2>/dev/null)" ]; then
 	rm -rf *fastq.gz
+elif [ ! -n "$(ls trimmed_reads 2>/dev/null)" ]; then
+	echo "Issue with Trimming!"
+	exit 1
 fi
 
 ###################################  ALIGNMENT #####################################################
@@ -74,6 +76,9 @@ bowtie2 -x hg38_index/hg38 \
 ######## --------------> Delete trimmed reads & other files for space (if-fi safeguard if alignment fails)
 if [ -n "$(ls aligned_reads 2>/dev/null)" ]; then
 	rm -rf trimmed_reads 1_end.txt 2_end.txt
+elif [ ! -n "$(ls aligned_reads 2>/dev/null)" ]; then
+	echo "Issue with Alignment!"
+	exit 2
 fi
 
 ######## --------------> Get GTF/GFF
@@ -89,7 +94,7 @@ featureCounts -T 8 -p -t exon -g gene_id -a hg38.refGene.gtf -o gene_counts.txt 
 ###################################  Move to New Folder #############################################
 GET_DATA=${GET_DATA//./_}
 mkdir $GET_DATA
-sudo mv aligned_reads gene_counts.txt gene_counts.txt.summary fastqc $GET_DATA/
+# sudo mv aligned_reads gene_counts.txt gene_counts.txt.summary fastqc $GET_DATA/
 
 ########################### COMPLETION NOTIFICATION #################################################
 Echo "Process Complete."
