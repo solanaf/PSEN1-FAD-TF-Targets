@@ -1,0 +1,28 @@
+# Read logFC values from RNA-seq data
+logfc_data <- read.csv("logFC_values.csv") 
+
+# Read TF-target interactions from a curated database
+tf_targets <- read.csv("tf_target_interactions.csv")  
+
+# Merge logFC values with target genes
+merged_data <- merge(tf_targets, logfc_data, by.x = "Target_Gene", by.y = "Gene")
+
+# Compute mean logFC for each TF 
+tf_activity <- merged_data %>%
+  group_by(TF) %>%
+  summarise(Activity_Score = mean(logFC, na.rm = TRUE))
+
+# Convert TF activity scores into a format suitable for plotting
+tf_activity$Condition <- "PSEN1 Mutation"  # Assign condition label
+
+# Generate dot plot
+ggplot(tf_activity, aes(x = TF, y = Condition, size = abs(Activity_Score), color = Activity_Score)) +
+  geom_point() +
+  scale_color_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
+  theme_minimal() +
+  labs(title = "Transcription Factor Activity Scores", 
+       x = "Transcription Factors", 
+       y = "Condition", 
+       color = "Activity Score",
+       size = "Significance")
+

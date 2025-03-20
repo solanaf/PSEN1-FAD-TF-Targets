@@ -1,0 +1,24 @@
+#Load libraries
+library(DESeq2)
+library(ggplot2)
+library(ggrepel)
+library(pheatmap)
+
+#Load raw counts and metadata
+raw_counts <- read.csv("path/to/raw_counts.csv", row.names = 1)
+metadata <- read.csv("path/to/metadata.csv", row.names = 1)
+all(colnames(raw_counts) %in% rownames(metadata))  # Should return TRUE
+
+#Create DESeq2 dataset
+dds <- DESeqDataSetFromMatrix(countData = raw_counts, 
+                              colData = metadata, 
+                              design = ~ condition)  
+
+#Filter out low-expression genes
+dds <- dds[rowSums(counts(dds)) > 10, ]
+
+#Differential Expression Analysis
+dds <- DESeq(dds)
+res <- results(dds, contrast = c("condition", "PSEN1_mutant", "WT"))
+significant_DEGs <- subset(res, padj < 0.05)
+write.csv(as.data.frame(significant_DEGs), "DEGs_results.csv")

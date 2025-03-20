@@ -1,0 +1,54 @@
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install(c("JASPAR2022", "TFBSTools", "Biostrings"))
+
+#Load necessary packages
+library(JASPAR2022)
+library(TFBSTools)
+library(Biostrings)
+
+#Define options to filter human TFs
+opts <- list(
+    species = 9606,   # Human taxonomy ID
+    collection = "CORE"
+)
+
+#Fetch TF binding motifs using JASPAR2022
+pfm_list <- getMatrixSet(JASPAR2022, opts)
+
+#Extract TF gene names from PFM list
+tf_list <- data.frame(gene_symbol = sapply(pfm_list, function(x) name(x)))
+write.csv(tf_list, "JASPAR_Human_TFs.csv", row.names = FALSE)
+
+#Filter RNA-seq data for TFs
+tfs_in_rnaseq <- rnaseq_data %>%
+    filter(gene_symbol %in% tf_list$gene_symbol) %>%  # Keep only TFs
+    filter(padj < 0.05, abs(log2FoldChange) > 1) %>%  # Apply significance & effect size threshold
+    arrange(desc(abs(log2FoldChange)))  # Sort by effect size
+write.csv(tfs_in_rnaseq, "DE_TFs_RNAseq.csv", row.names = FALSE)
+
+#Merge TF list with ATAC-seq data to check accessibility
+accessible_TFs <- tfs_in_rnaseq %>%
+    inner_join(atac_seq_data, by = "gene_symbol") %>%  # Match TFs with ATAC-seq peaks
+    filter(padj < 0.05)  # Keep only significant TFs from RNA-seq
+write.csv(accessible_TFs, "TFs_accessible.csv", row.names = FALSE)
+
+library(dplyr)
+chea3_results <- read.csv("path/to/chea3 tf results.csv", stringsAsFactors = FALSE)
+ 
+#Filter for top-ranked TFs (Mean Rank <= 20, adjust as needed)
+top_tfs <- chea3_results %>% filter(Rank <= 20)
+ 
+#Extract unique target genes
+tf_targets <- unique(unlist(strsplit(top_tfs$Overlapping_Genes, ";")))  # Targets are usually semicolon-separated
+
+#Load RNA-seq DEGs
+>rnaseq_degs <- read.csv("path/toDESeq2_results.csv")$gene_symbol
+
+#Extract unique target genes (fixing the delimiter to ",")
+tf_targets <- unique(unlist(strsplit(top_tfs$Overlapping_Genes, ",")))  # Use "," instead of ";" 
+common_targets <- intersect(tf_targets, rnaseq_degs)
+print(common_targets)
+
+

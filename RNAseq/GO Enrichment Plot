@@ -1,0 +1,30 @@
+library(readxl)           
+library(org.Hs.eg.db)     
+library(clusterProfiler)  
+library(ggplot2) 
+
+df <- read_excel("your_file.xlsx")
+
+gene_list <- df$Gene  #Selected the column containing gene symbols
+gene_list <- as.character(gene_list)
+
+mapped_genes <- mapIds(org.Hs.eg.db, 
+                       keys = gene_list,      
+                       column = "ENTREZID",    #Retrieved ENTREZ IDs
+                       keytype = "SYMBOL",     #Input was in SYMBOL format
+                       multiVals = "first")    #Selected the first match
+
+mapped_genes <- na.omit(mapped_genes)  #Removed NA values
+entrez_list <- unique(as.character(mapped_genes))  #Ensured unique ENTREZ IDs
+
+ego <- enrichGO(gene = entrez_list,     
+                OrgDb = org.Hs.eg.db,   
+                keyType = "ENTREZID",   
+                ont = "BP",             
+                pAdjustMethod = "fdr",  
+                readable = TRUE)        
+
+dotplot(ego, showCategory = 8)  # Displayed top 8 enriched GO terms
+
+
+
