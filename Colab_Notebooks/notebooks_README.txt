@@ -6,7 +6,5 @@ Updated Analysis.ipynb: ATAC-seq analysis (Differential Peak Analysis, Annotatio
 
 JASPAR.ipynb: Jaspar binding profiles, plots from output of gimmemotifs
 
-GM.ipynb: can ignore -- an attempt at gimmemotifs, but was ultimately taken to a local PC at come in WSL
-
 gimme motifs tf curation.ipynb: Compares tf binding motifs from gimmemotifs and RNA-derived transcription factors
 
