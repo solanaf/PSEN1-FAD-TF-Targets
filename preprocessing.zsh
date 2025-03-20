@@ -1,3 +1,4 @@
+
 ################################# PREPROCESSING PIPELINE! #######################################
 # Project: PSEN1 FAD TFs
 # Creator: Solana Fernandez
@@ -21,15 +22,11 @@ chmod +x $GET_DATA
 
 zsh $GET_DATA # throws fastq's in current directory (deleted later)
 
-######################################  FastQC  ###################################################  
-mkdir fastqc
-find . -name "*.fastq.gz" | xargs fastqc -t 8 -o fastqc
-
 ################################## TrimGalore #####################################################
 ######## --------------> prep fastq files to iterate through IN ORDER
 
-find . -type f -name "*_1.fastq.gz" > 1_end.txt
-find . -type f -name "*_2.fastq.gz" > 2_end.txt
+find . -maxdepth 2 -type f -name "*_1.fastq.gz" > 1_end.txt
+find . -maxdepth 2 -type f -name "*_2.fastq.gz" > 2_end.txt
 echo "1 end to trim: " && cat 1_end.txt
 sort 1_end.txt -o 1_end.txt
 echo "2 end to trim: " && cat 2_end.txt
@@ -59,8 +56,8 @@ if [ ! -f "hg38.fa" ]; then
 fi
 
 ######## --------------> Retrieve pair-end reads
-find . -type f -name "*_1.fq.gz" > 1_end.txt
-find . -type f -name "*_2.fq.gz" > 2_end.txt
+find . -maxdepth 2 -type f -name "*_1.fq.gz" > 1_end.txt
+find . -maxdepth 2 -type f -name "*_2.fq.gz" > 2_end.txt
 echo "1 end to align: " && cat 1_end.txt
 sort 1_end.txt -o 1_end.txt
 echo "2 end to align: " && cat 2_end.txt
@@ -92,8 +89,8 @@ fi
 featureCounts -T 8 -p -t exon -g gene_id -a hg38.refGene.gtf -o gene_counts.txt aligned_reads/*.bam 
  
 ###################################  Move to New Folder #############################################
-GET_DATA=${GET_DATA//./_}
-mkdir $GET_DATA
+#GET_DATA=${GET_DATA//./_}
+#mkdir $GET_DATA
 # sudo mv aligned_reads gene_counts.txt gene_counts.txt.summary fastqc $GET_DATA/
 
 ########################### COMPLETION NOTIFICATION #################################################
