@@ -1,1 +1,3 @@
-The files in this subholder are redundant from: https://github.com/Pavithra2071/Transcription-Factor-Targets-in-PSEN1-Mutagenic-Familial-Alzheimer-s-Disease-
+![Regulatory network of top 20 TFs post DEG analysis](RNAseq/reg network of hub tfs.png)
+![GO ernichment plot of enriched TFs post RNA-seq and ATAC-seq integration](RNAseq/Go enrichment.png)
+![Dot plot of most significant TFs post RNA-seq and ATAC-seq integration](RNAseq/Dot plot of most significant tfs.png)
